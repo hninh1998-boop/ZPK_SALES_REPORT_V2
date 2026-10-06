@@ -26,10 +26,8 @@ annotate entity zce_sales_report with
   }]
   CompanyCode;
 
-  // (4) Fiscal Year - Single, Mandatory
-  @UI.selectionField: [{ position: 20 }]
-  @Consumption.filter.mandatory: true
-  @Consumption.filter.selectionType: #SINGLE
+  // Fiscal Year - không dùng làm filter (lọc theo Posting Date)
+  @Consumption.filter.hidden: true
   @UI.identification: [{ position: 20, label: 'Fiscal Year' }]
   FiscalYear;
 

@@ -3,13 +3,11 @@ CLASS lhc_salesreportexp DEFINITION INHERITING FROM cl_abap_behavior_handler.
 
     " Cấu trúc của json_string, FE gửi filter đang chọn trên màn hình, ví dụ:
     " { "CompanyCode":  [ { "sign": "I", "option": "EQ", "low": "6710" } ],
-    "   "FiscalYear":   [ { "low": "2025" } ],
     "   "PostingDate":  [ { "option": "BT", "low": "20251201", "high": "20251231" } ],
     "   "Plant": [], "Product": [], "SalesDistrict": [] }
     " sign / option bỏ trống → mặc định I / EQ (BT nếu có high)
     TYPES: BEGIN OF ty_filter,
              companycode   TYPE if_rap_query_filter=>tt_range_option,
-             fiscalyear    TYPE if_rap_query_filter=>tt_range_option,
              postingdate   TYPE if_rap_query_filter=>tt_range_option,
              plant         TYPE if_rap_query_filter=>tt_range_option,
              product       TYPE if_rap_query_filter=>tt_range_option,
@@ -72,26 +70,24 @@ CLASS lhc_salesreportexp IMPLEMENTATION.
     ).
 
     normalize_range( CHANGING ct_range = ls_filter-companycode ).
-    normalize_range( CHANGING ct_range = ls_filter-fiscalyear ).
     normalize_range( CHANGING ct_range = ls_filter-postingdate ).
     normalize_range( CHANGING ct_range = ls_filter-plant ).
     normalize_range( CHANGING ct_range = ls_filter-product ).
     normalize_range( CHANGING ct_range = ls_filter-salesdistrict ).
 
     DATA(lr_company)  = CORRESPONDING zcl_ce_sales_report=>tr_company( ls_filter-companycode ).
-    DATA(lr_fyear)    = CORRESPONDING zcl_ce_sales_report=>tr_fyear( ls_filter-fiscalyear ).
     DATA(lr_pdate)    = CORRESPONDING zcl_ce_sales_report=>tr_pdate( ls_filter-postingdate ).
     DATA(lr_plant)    = CORRESPONDING zcl_ce_sales_report=>tr_plant( ls_filter-plant ).
     DATA(lr_district) = CORRESPONDING zcl_ce_sales_report=>tr_district( ls_filter-salesdistrict ).
     DATA(lr_product)  = zcl_ce_sales_report=>conv_product_range( ls_filter-product ).
 
     " Validate mandatory filters (giống query của custom entity)
-    IF lr_company IS INITIAL OR lr_fyear IS INITIAL OR lr_pdate IS INITIAL.
+    IF lr_company IS INITIAL OR lr_pdate IS INITIAL.
       APPEND VALUE #( %cid = ls_key-%cid ) TO failed-salesreportexp.
       APPEND VALUE #( %cid = ls_key-%cid
                       %msg = new_message_with_text(
                         severity = if_abap_behv_message=>severity-error
-                        text     = 'Vui lòng nhập Company Code, Fiscal Year và Posting Date' )
+                        text     = 'Vui lòng nhập Company Code và Posting Date' )
                     ) TO reported-salesreportexp.
       RETURN.
     ENDIF.
@@ -101,7 +97,6 @@ CLASS lhc_salesreportexp IMPLEMENTATION.
                       ir_plant    = lr_plant
                       ir_product  = lr_product
                       ir_company  = lr_company
-                      ir_fyear    = lr_fyear
                       ir_pdate    = lr_pdate
                       ir_district = lr_district ).
 
@@ -203,4 +198,5 @@ CLASS lsc_zce_sales_report_exp IMPLEMENTATION.
   ENDMETHOD.
 
 ENDCLASS.
+
 

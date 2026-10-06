@@ -15,7 +15,8 @@ CLASS zcl_ce_sales_report DEFINITION
     TYPES tr_pdate    TYPE RANGE OF zce_sales_report-postingdate.
     TYPES tr_district TYPE RANGE OF char6.
 
-    " Pad mã hàng trong filter về dạng nội bộ (18 ký tự, số 0 ở đầu)
+    " Bỏ số 0 ở đầu mã hàng trong filter, để so với ltrim( product, '0' ) trong get_data
+    " (EQ 300004390 và pattern 3* đều khớp với mã nội bộ 000000000300004390)
     CLASS-METHODS conv_product_range
       IMPORTING it_range          TYPE if_rap_query_filter=>tt_range_option
       RETURNING VALUE(rr_product) TYPE tr_product.
@@ -26,7 +27,7 @@ CLASS zcl_ce_sales_report DEFINITION
       IMPORTING ir_plant         TYPE tr_plant    OPTIONAL
                 ir_product       TYPE tr_product  OPTIONAL
                 ir_company       TYPE tr_company
-                ir_fyear         TYPE tr_fyear
+                ir_fyear         TYPE tr_fyear    OPTIONAL
                 ir_pdate         TYPE tr_pdate
                 ir_district      TYPE tr_district OPTIONAL
       RETURNING VALUE(rt_result) TYPE tt_result.
@@ -74,7 +75,7 @@ CLASS zcl_ce_sales_report IMPLEMENTATION.
     ENDLOOP.
 
     " Validate mandatory filters
-    IF lr_company IS INITIAL OR lr_fyear IS INITIAL OR lr_pdate IS INITIAL.
+    IF lr_company IS INITIAL OR lr_pdate IS INITIAL.
       io_response->set_total_number_of_records( 0 ).
       io_response->set_data( lt_result ).
       RETURN.
@@ -221,16 +222,8 @@ CLASS zcl_ce_sales_report IMPLEMENTATION.
       rr_product = VALUE #( BASE rr_product (
         sign   = ls_range_prod-sign
         option = ls_range_prod-option
-        low    = COND #(
-          WHEN ls_range_prod-option = 'CP' OR ls_range_prod-option = 'NP'
-          THEN ls_range_prod-low   "← giữ nguyên wildcard, không pad
-          ELSE |{ ls_range_prod-low  WIDTH = 18 ALIGN = RIGHT PAD = '0' }|
-        )
-        high   = COND #(
-          WHEN ls_range_prod-option = 'CP' OR ls_range_prod-option = 'NP'
-          THEN ls_range_prod-high
-          ELSE |{ ls_range_prod-high WIDTH = 18 ALIGN = RIGHT PAD = '0' }|
-        )
+        low    = shift_left( val = ls_range_prod-low  sub = '0' )
+        high   = shift_left( val = ls_range_prod-high sub = '0' )
       ) ).
     ENDLOOP.
 
@@ -272,7 +265,7 @@ CLASS zcl_ce_sales_report IMPLEMENTATION.
         AND gli~fiscalyear         IN @ir_fyear
         AND gli~postingdate        IN @ir_pdate
         AND gli~plant              IN @ir_plant
-        AND gli~product            IN @ir_product
+        AND ltrim( gli~product, '0' ) IN @ir_product
         AND gli~glaccount LIKE '632%'
         AND gli~ledger             = '0L'
         AND gli~glaccounthierarchy = 'ZPL'
@@ -358,7 +351,7 @@ CLASS zcl_ce_sales_report IMPLEMENTATION.
         AND gli~fiscalyear         IN @ir_fyear
         AND gli~postingdate        IN @ir_pdate
         AND gli~plant              IN @ir_plant
-        AND gli~product            IN @ir_product
+        AND ltrim( gli~product, '0' ) IN @ir_product
         AND gli~salesdistrict      IN @ir_district
         AND gli~ledger             =  '0L'
         AND gli~glaccounthierarchy =  'ZPL'
@@ -580,4 +573,5 @@ CLASS zcl_ce_sales_report IMPLEMENTATION.
 
   ENDMETHOD.
 ENDCLASS.
+
 
