@@ -1,0 +1,156 @@
+@Metadata.layer: #CUSTOMER
+@UI.headerInfo: {
+    typeName: 'Data',
+    typeNamePlural: 'Datas'
+}
+annotate entity zce_sales_report with
+{
+  @UI.facet: [{
+      id: 'idSalesReport',
+      purpose: #STANDARD,
+      position: 10,
+      label: 'Báo cáo bán hàng chi tiết',
+      type: #IDENTIFICATION_REFERENCE
+  }]
+
+  // (1) Company Code - Single, Mandatory
+  @UI.selectionField: [{ position: 10 }]
+  @Consumption.filter.mandatory: true
+  @Consumption.filter.selectionType: #SINGLE
+  @UI.identification: [{ position: 10, label: 'Company Code' }]
+  @Consumption.valueHelpDefinition: [{
+      entity: {
+          name:    'ZI_COMPANYCODE_VH',
+          element: 'CompanyCode'
+      }
+  }]
+  CompanyCode;
+
+  // (4) Fiscal Year - Single, Mandatory
+  @UI.selectionField: [{ position: 20 }]
+  @Consumption.filter.mandatory: true
+  @Consumption.filter.selectionType: #SINGLE
+  @UI.identification: [{ position: 20, label: 'Fiscal Year' }]
+  FiscalYear;
+
+  // (3) Posting Date - Khoảng ngày, Mandatory
+  // FE hiện dạng date range (Year to Date, From / To...) nhờ dateSettings.useDateRange trong manifest
+  @UI.selectionField: [{ position: 30 }]
+  @Consumption.filter.mandatory: true
+  @Consumption.filter.selectionType: #INTERVAL
+  @UI.identification: [{ position: 30, label: 'Posting Date' }]
+  PostingDate;
+
+  // (2) Plant - Multiple, Optional
+  @UI.selectionField: [{ position: 40 }]
+  @Consumption.filter.selectionType: #RANGE
+  @UI.lineItem:       [{ position: 20,  label: 'Tên nhà máy' }]
+  @UI.identification: [{ position: 40,  label: 'Tên nhà máy' }]
+  @Consumption.valueHelpDefinition: [{
+      entity: {
+          name:    'ZI_PLANT_BY_CC_VH',
+          element: 'Plant'
+      },
+      additionalBinding: [{
+          localElement: 'CompanyCode',
+          element:      'CompanyCode',
+          usage:        #FILTER_AND_RESULT
+      }]
+  }]
+  Plant;
+
+  // (5) Product Sold - Multiple, Optional
+  @UI.selectionField: [{ position: 50 }]
+  @Consumption.filter.selectionType: #RANGE
+  @UI.lineItem:       [{ position: 30,  label: 'Mã hàng' }]
+  @UI.identification: [{ position: 50,  label: 'Mã hàng' }]
+  @Consumption.valueHelpDefinition: [{
+      entity: {
+          name:    'I_ProductStdVH',
+          element: 'Product'
+      }
+  }]
+  Product;
+
+  // (6) Sales District - Multiple, Optional
+  @UI.selectionField: [{ position: 60 }]
+  @Consumption.filter.selectionType: #RANGE
+  @UI.lineItem:       [{ position: 110, label: 'Thị trường xuất khẩu' }]
+  @UI.identification: [{ position: 60,  label: 'Thị trường xuất khẩu' }]
+  @UI.textArrangement: #TEXT_LAST
+  @Consumption.valueHelpDefinition: [{
+      entity: {
+          name:    'ZI_SALESDISTRICT_VH',
+          element: 'SalesDistrict'
+      }
+  }]
+  SalesDistrict;
+
+  // (4) Tên hàng
+  @UI.lineItem:       [{ position: 40, label: 'Tên hàng' }]
+  @UI.identification: [{ position: 70, label: 'Tên hàng' }]
+  @Consumption.filter.hidden: true
+  ProductName;
+
+  //  // (5) ĐVT
+  //  @UI.lineItem:       [{ position: 50, label: 'ĐVT' }]
+  //  @UI.identification: [{ position: 80, label: 'ĐVT' }]
+  //  @Consumption.filter.hidden: true
+  //  BaseUnit;
+
+  // (6) Loại hàng
+  @UI.lineItem:       [{ position: 60, label: 'Loại hàng' }]
+  @UI.identification: [{ position: 90, label: 'Loại hàng' }]
+  @UI.textArrangement: #TEXT_LAST
+  @Consumption.filter.hidden: true
+  ProductGroup;
+
+  // (7) Số lượng
+  @UI.lineItem:       [{ position: 70,  label: 'Số lượng' }]
+  @UI.identification: [{ position: 100, label: 'Số lượng' }]
+  Quantity;
+
+  // (8) Doanh thu USD
+  @UI.lineItem:       [{ position: 80,  label: 'Doanh thu USD' }]
+  @UI.identification: [{ position: 110, label: 'Doanh thu USD' }]
+  RevenueUSD;
+
+  // (9) Doanh thu VND
+  @UI.lineItem:       [{ position: 90,  label: 'Doanh thu VND' }]
+  @UI.identification: [{ position: 120, label: 'Doanh thu VND' }]
+  RevenueVND;
+
+  // (10) Giá vốn VND
+  @UI.lineItem:       [{ position: 100, label: 'Giá vốn VND' }]
+  @UI.identification: [{ position: 130, label: 'Giá vốn VND' }]
+  COGSVND;
+
+  //  @UI.lineItem: [{ position: 110, label: 'Accounting Doc' }]
+  //  AcctDoc;
+  //
+  //  @UI.lineItem: [{ position: 120, label: 'Reverse Fiscal Period' }]
+  //  ReverseFiscalPeriod;
+  //
+  //  @UI.lineItem: [{ position: 130, label: 'Reverse Document' }]
+  //  ReverseDoc;
+
+  // ── Hidden ────────────────────────────────────────────────────
+  //  @UI.hidden: true
+  //  @Consumption.filter.defaultValue: 'USD'
+  //  TransactionCurrency;
+
+  //  @UI.hidden: true
+  //  @Consumption.filter.defaultValue: 'VND'
+  @Consumption.filter.hidden: true
+  CompanyCodeCurrency;
+
+  @Consumption.filter.hidden: true
+  CurrencyUSD;
+
+  @Consumption.filter.hidden: true
+  SalesDistrictName;
+
+  @Consumption.filter.hidden: true
+  ProductGroupName;
+
+}

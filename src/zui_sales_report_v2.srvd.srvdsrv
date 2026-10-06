@@ -1,0 +1,5 @@
+@EndUserText.label: 'ZUI_SALES_REPORT_V2'
+define service ZUI_SALES_REPORT_V2 {
+  expose zce_sales_report;
+  expose zce_sales_report_exp;
+}

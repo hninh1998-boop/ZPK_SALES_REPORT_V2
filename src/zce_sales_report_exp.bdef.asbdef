@@ -1,0 +1,12 @@
+unmanaged implementation in class zbp_ce_sales_report_exp unique;
+strict ( 2 );
+
+// Tách riêng khỏi zce_sales_report: entity có @Aggregation.default không được có BDEF
+// ("Aggregate functions are not allowed in transactional views")
+define behavior for zce_sales_report_exp alias SalesReportExp
+lock master
+authorization master ( instance )
+{
+  // json_string = filter đang chọn trên màn hình (xem ty_filter trong zbp_ce_sales_report_exp)
+  static action ExportExcel parameter ZC_DOWNLOAD_PARAM_SRP result [1] ZI_FILE_ABS_SRP;
+}

@@ -1,0 +1,34 @@
+{
+  "formatVersion": "2",
+  "header": {
+    "description": "An SAP Fiori application.",
+    "originalLanguage": "en",
+    "abapLanguageVersion": "cloudDevelopment"
+  },
+  "generalInformation": {
+    "appType": "ui5",
+    "catalogId": "SAP_TC_UI5_REPO_UIAD",
+    "targetMappingTitle": "Báo cáo bán hàng"
+  },
+  "ui5AppDetails": {
+    "appId": "zrpsalesv2"
+  },
+  "navigation": {
+    "targetMappingId": "UI5R_F961EB4FD9374ADF77F3247516A93D47E39CEDE3_TM",
+    "semanticObject": "zrp_sales_v2",
+    "action": "display",
+    "desktop": true,
+    "tablet": true,
+    "phone": true
+  },
+  "tiles": [
+    {
+      "id": "UI5R_F961EB4FD9374ADF77F3247516A93D47E39CEDE3_AL",
+      "tileType": "static",
+      "isDefault": true,
+      "standard": {
+        "title": "Báo cáo bán hàng"
+      }
+    }
+  ]
+}

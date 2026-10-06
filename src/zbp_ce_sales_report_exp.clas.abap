@@ -1,0 +1,16 @@
+CLASS zbp_ce_sales_report_exp DEFINITION
+  PUBLIC
+  ABSTRACT
+  FINAL
+  FOR BEHAVIOR OF zce_sales_report_exp .
+
+  PUBLIC SECTION.
+  PROTECTED SECTION.
+  PRIVATE SECTION.
+ENDCLASS.
+
+
+
+CLASS zbp_ce_sales_report_exp IMPLEMENTATION.
+ENDCLASS.
+
